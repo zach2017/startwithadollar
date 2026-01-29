@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>$1 Business Challenge - Student Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .bounce-animation {
+            animation: bounce 2s ease-in-out infinite;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .slide-in-right {
+            animation: slideInRight 0.5s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-100 via-purple-100 to-pink-100 min-h-screen">
+
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 text-white py-6 shadow-2xl">
+        <div class="container mx-auto px-4 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold mb-2">🚀 Your $1 Business Adventure! 💰</h1>
+            <p class="text-lg md:text-xl opacity-90">Let's turn $1 into MORE money!</p>
+        </div>
+    </header>
+
+    <!-- Progress Bar -->
+    <div class="bg-white shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-sm font-bold text-gray-700">Step <span id="currentStepNum">1</span> of 6</span>
+                <span class="text-sm font-bold text-purple-600" id="progressPercent">0%</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-4">
+                <div id="progressBar" class="bg-gradient-to-r from-purple-600 to-pink-600 h-4 rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        
+        <!-- Main Content Container -->
+        <div id="stepContent" class="bg-white rounded-3xl shadow-2xl p-8 md:p-12 min-h-[500px] fade-in">
+            <!-- Steps will be loaded here -->
+        </div>
+
+        <!-- Navigation Buttons -->
+        <div class="flex justify-between items-center mt-8 gap-4">
+            <button id="backBtn" onclick="previousStep()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-3 px-8 rounded-full transition transform hover:scale-105 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                ← Back
+            </button>
+            
+            <button id="resetBtn" onclick="resetGame()" class="bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-full transition transform hover:scale-105 shadow-lg">
+                🔄 Start Over
+            </button>
+            
+            <button id="nextBtn" onclick="nextStep()" class="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-8 rounded-full transition transform hover:scale-105 shadow-lg">
+                Next →
+            </button>
+        </div>
+
+        <!-- Tip Modal -->
+        <div id="tipModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4" onclick="closeTip()">
+            <div class="bg-white rounded-3xl p-8 max-w-2xl w-full shadow-2xl transform transition-all" onclick="event.stopPropagation()">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-3xl font-bold text-purple-700">💡 Pro Tip!</h3>
+                    <button onclick="closeTip()" class="text-gray-500 hover:text-gray-700 text-3xl font-bold">×</button>
+                </div>
+                <div id="tipContent" class="text-lg text-gray-800">
+                    <!-- Tip content will be inserted here -->
+                </div>
+                <button onclick="closeTip()" class="mt-6 bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 px-8 rounded-full w-full transition">
+                    Got it! 👍
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Game State
+        let currentStep = 1;
+        let gameData = {
+            businessType: '', // 'product' or 'service'
+            selectedItems: [],
+            prices: {},
+            sales: [],
+            totalSpent: 0,
+            totalEarned: 0
+        };
+
+        // Dollar Store Items
+        const dollarStoreItems = [
+            { id: 'candy', name: 'Candy Pack (10 pieces)', cost: 1.00, category: 'snacks', emoji: '🍬', suggested: 0.25 },
+            { id: 'gum', name: 'Gum Pack (8 pieces)', cost: 1.00, category: 'snacks', emoji: '🍭', suggested: 0.25 },
+            { id: 'chips', name: 'Small Chip Bags (2)', cost: 1.00, category: 'snacks', emoji: '🥨', suggested: 0.75 },
+            { id: 'cookies', name: 'Cookie Pack (6)', cost: 1.00, category: 'snacks', emoji: '🍪', suggested: 0.35 },
+            { id: 'paper', name: 'Colored Paper (50 sheets)', cost: 1.00, category: 'crafts', emoji: '📄', suggested: 0.10 },
+            { id: 'markers', name: 'Markers (4-pack)', cost: 1.00, category: 'crafts', emoji: '🖍️', suggested: 0.50 },
+            { id: 'stickers', name: 'Sticker Sheet (20+)', cost: 1.00, category: 'crafts', emoji: '⭐', suggested: 0.10 },
+            { id: 'pencils', name: 'Pencils (10-pack)', cost: 1.00, category: 'supplies', emoji: '✏️', suggested: 0.25 },
+            { id: 'wipes', name: 'Cleaning Wipes', cost: 1.00, category: 'service', emoji: '🧹', suggested: 0.50 },
+            { id: 'notepad', name: 'Notepads (3-pack)', cost: 1.00, category: 'supplies', emoji: '📝', suggested: 0.50 }
+        ];
+
+        // Service Ideas
+        const serviceIdeas = [
+            { 
+                id: 'organize', 
+                name: 'Desk Organizer', 
+                emoji: '📚',
+                description: 'Organize messy desks and backpacks',
+                time: '5 min per desk',
+                suggested: 0.50,
+                supplies: 'Use your dollar to buy organizing containers or cleaning wipes'
+            },
+            { 
+                id: 'artist', 
+                name: 'Custom Artist', 
+                emoji: '🎨',
+                description: 'Draw custom pictures, bookmarks, or cards',
+                time: '3-5 min per item',
+                suggested: 0.75,
+                supplies: 'Buy colored paper and markers with your dollar'
+            },
+            { 
+                id: 'homework', 
+                name: 'Homework Helper', 
+                emoji: '📖',
+                description: 'Help explain difficult homework (not do it for them!)',
+                time: '10 min per student',
+                suggested: 0.50,
+                supplies: 'Buy paper and pencils to show your work'
+            },
+            { 
+                id: 'messenger', 
+                name: 'Message Delivery', 
+                emoji: '✉️',
+                description: 'Deliver notes or small items between friends',
+                time: '2 min per delivery',
+                suggested: 0.25,
+                supplies: 'Buy notepads to write fancy delivery receipts'
+            },
+            { 
+                id: 'games', 
+                name: 'Game Master', 
+                emoji: '🎮',
+                description: 'Run quick fun games or challenges during breaks',
+                time: '10 min per game',
+                suggested: 0.25,
+                supplies: 'Buy paper and markers to create game materials'
+            },
+            { 
+                id: 'cleaner', 
+                name: 'Quick Cleaner', 
+                emoji: '✨',
+                description: 'Clean keyboards, desks, or whiteboards',
+                time: '3 min per item',
+                suggested: 0.50,
+                supplies: 'Buy cleaning wipes or cloths'
+            }
+        ];
+
+        // Tips Database
+        const tips = {
+            business: "Business is simple: Find something people WANT or NEED → Provide it → Charge money for it. The bigger the problem you solve, the more money you can make! Every business in the world follows this pattern.",
+            
+            value: "People don't pay for things - they pay for VALUE! A bottle of water costs 25¢ at home, but $2 at a concert. Why? Because at the concert, people are thirsty and have no other options. The VALUE is higher!",
+            
+            profit: "Profit = Money Earned - Money Spent. If you buy candy for $1 and sell pieces for $0.25 each, you need to sell at least 5 pieces just to break even. The 6th piece and beyond is PURE PROFIT!",
+            
+            problems: "The best businesses solve real problems! Look around: Is someone hungry? Cold? Bored? Messy? Stressed? Each problem is a business opportunity!",
+            
+            products: "Selling products means buying low and selling high. The trick is finding what people want RIGHT NOW and making it easy for them to buy from you!",
+            
+            services: "Selling services means trading your TIME and SKILLS for money. No inventory needed! You just need to be good at something others find valuable.",
+            
+            pricing: "Price too high = no customers. Price too low = no profit. The sweet spot? Charge what people are WILLING to pay based on how badly they need it!",
+            
+            scale: "To make MORE money, you need to: 1) Serve more customers, 2) Charge higher prices, or 3) Reduce your costs. That's it! Every big business does this.",
+            
+            reinvest: "Smart entrepreneurs don't spend all their profits! They REINVEST it to buy more inventory, hire helpers, or improve their product. That's how $1 becomes $10, then $100, then more!",
+            
+            customer: "Your first customer is the hardest. After that, ask them to tell their friends! Word of mouth is the best advertising and it's FREE!"
+        };
+
+        // Initialize
+        window.onload = function() {
+            loadGameData();
+            renderStep();
+        };
+
+        // Save/Load Functions
+        function saveGameData() {
+            localStorage.setItem('businessGameData', JSON.stringify(gameData));
+            localStorage.setItem('businessGameStep', currentStep);
+        }
+
+        function loadGameData() {
+            const savedData = localStorage.getItem('businessGameData');
+            const savedStep = localStorage.getItem('businessGameStep');
+            
+            if (savedData) {
+                gameData = JSON.parse(savedData);
+            }
+            if (savedStep) {
+                currentStep = parseInt(savedStep);
+            }
+        }
+
+        function resetGame() {
+            if (confirm('Are you sure you want to start over? All your progress will be lost!')) {
+                localStorage.clear();
+                gameData = {
+                    businessType: '',
+                    selectedItems: [],
+                    prices: {},
+                    sales: [],
+                    totalSpent: 0,
+                    totalEarned: 0
+                };
+                currentStep = 1;
+                renderStep();
+            }
+        }
+
+        // Step Navigation
+        function nextStep() {
+            if (currentStep < 6) {
+                currentStep++;
+                saveGameData();
+                renderStep();
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function previousStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                renderStep();
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentStep - 1) / 5) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            document.getElementById('progressPercent').textContent = Math.round(progress) + '%';
+            document.getElementById('currentStepNum').textContent = currentStep;
+            
+            // Update buttons
+            document.getElementById('backBtn').disabled = currentStep === 1;
+        }
+
+        // Tip Modal
+        function showTip(tipKey) {
+            document.getElementById('tipContent').innerHTML = `
+                <p class="text-xl leading-relaxed">${tips[tipKey]}</p>
+            `;
+            document.getElementById('tipModal').classList.remove('hidden');
+            document.getElementById('tipModal').classList.add('flex');
+        }
+
+        function closeTip() {
+            document.getElementById('tipModal').classList.add('hidden');
+            document.getElementById('tipModal').classList.remove('flex');
+        }
+
+        // Render Current Step
+        function renderStep() {
+            updateProgress();
+            
+            const content = document.getElementById('stepContent');
+            content.classList.remove('fade-in');
+            
+            setTimeout(() => {
+                content.classList.add('fade-in');
+                
+                switch(currentStep) {
+                    case 1:
+                        renderStep1();
+                        break;
+                    case 2:
+                        renderStep2();
+                        break;
+                    case 3:
+                        renderStep3();
+                        break;
+                    case 4:
+                        renderStep4();
+                        break;
+                    case 5:
+                        renderStep5();
+                        break;
+                    case 6:
+                        renderStep6();
+                        break;
+                }
+            }, 50);
+        }
+
+        // STEP 1: Welcome & Business Basics
+        function renderStep1() {
+            document.getElementById('stepContent').innerHTML = `
+                <div class="text-center">
+                    <div class="text-8xl mb-6 bounce-animation">💰</div>
+                    <h2 class="text-4xl font-bold text-gray-800 mb-4">Welcome to Your Business Journey!</h2>
+                    <p class="text-xl text-gray-700 mb-8">You have $1. Your mission: Turn it into MORE money in 15 minutes!</p>
+                </div>
+
+                <div class="bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl p-8 mb-8">
+                    <h3 class="text-2xl font-bold text-purple-800 mb-4 flex items-center gap-2">
+                        🎯 How Does Business Actually Work?
+                        <button onclick="showTip('business')" class="text-sm bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-full transition">
+                            Show Me Tip! 💡
+                        </button>
+                    </h3>
+                    
+                    <div class="space-y-6">
+                        <div class="bg-white rounded-xl p-6 shadow-lg">
+                            <div class="flex items-start gap-4">
+                                <div class="text-4xl">1️⃣</div>
+                                <div>
+                                    <h4 class="text-xl font-bold text-gray-800 mb-2">Find What People Want</h4>
+                                    <p class="text-gray-700">Look around! Are people hungry? Bored? Do they need help with something? Every want or need is an opportunity!</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl p-6 shadow-lg">
+                            <div class="flex items-start gap-4">
+                                <div class="text-4xl">2️⃣</div>
+                                <div>
+                                    <h4 class="text-xl font-bold text-gray-800 mb-2">Provide Value</h4>
+                                    <p class="text-gray-700">Give them what they want! Sell them a snack, help them organize, create something cool. You're solving their problem!</p>
+                                    <button onclick="showTip('value')" class="mt-2 text-sm text-purple-600 hover:text-purple-800 font-semibold">
+                                        💡 What is "value"? Click for tip!
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-white rounded-xl p-6 shadow-lg">
+                            <div class="flex items-start gap-4">
+                                <div class="text-4xl">3️⃣</div>
+                                <div>
+                                    <h4 class="text-xl font-bold text-gray-800 mb-2">Get Paid!</h4>
+                                    <p class="text-gray-700">Charge money for your product or service. Make sure you charge MORE than it cost you - that's called PROFIT!</p>
+                                    <button onclick="showTip('profit')" class="mt-2 text-sm text-purple-600 hover:text-purple-800 font-semibold">
+                                        💡 How does profit work? Click for tip!
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-yellow-100 border-4 border-yellow-400 rounded-2xl p-6 text-center">
+                    <h3 class="text-2xl font-bold text-yellow-800 mb-3">🌟 Real World Example 🌟</h3>
+                    <p class="text-lg text-gray-800 mb-3">Sarah bought a pack of 10 candy bars for $1.</p>
+                    <p class="text-lg text-gray-800 mb-3">She sold each candy bar for 25¢ to hungry classmates.</p>
+                    <p class="text-2xl font-bold text-green-700">Result: She made $2.50! That's $1.50 PROFIT! 🎉</p>
+                </div>
+            `;
+        }
+
+        // STEP 2: Problem Solving & Opportunities
+        function renderStep2() {
+            document.getElementById('stepContent').innerHTML = `
+                <div class="text-center mb-8">
+                    <div class="text-7xl mb-4">🔍</div>
+                    <h2 class="text-4xl font-bold text-gray-800 mb-4">Finding Your Opportunity</h2>
+                    <p class="text-xl text-gray-700">The secret to business? Solve problems people actually have!</p>
+                    <button onclick="showTip('problems')" class="mt-4 bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-full font-bold transition">
+                        💡 Show Me How to Find Problems!
+                    </button>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <div class="bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl p-6 border-4 border-blue-400">
+                        <h3 class="text-2xl font-bold text-blue-800 mb-4">❓ Ask These Questions:</h3>
+                        <ul class="space-y-3 text-gray-800">
+                            <li class="flex items-start gap-2">
+                                <span class="font-bold text-blue-600">•</span>
+                                <span>What do my classmates complain about?</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="font-bold text-blue-600">•</span>
+                                <span>What did people forget to bring today?</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="font-bold text-blue-600">•</span>
+                                <span>What makes people's day harder?</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="font-bold text-blue-600">•</span>
+                                <span>What would make people happy right now?</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="font-bold text-blue-600">•</span>
+                                <span>What do I have that others need?</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-gradient-to-br from-green-100 to-green-200 rounded-2xl p-6 border-4 border-green-400">
+                        <h3 class="text-2xl font-bold text-green-800 mb-4">💡 Common Opportunities:</h3>
+                        <ul class="space-y-3 text-gray-800">
+                            <li class="flex items-start gap-2">
+                                <span class="text-2xl">🍔</span>
+                                <span><strong>Hungry students</strong> - Sell snacks!</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-2xl">😰</span>
+                                <span><strong>Forgot supplies</strong> - Sell pencils, paper!</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-2xl">😴</span>
+                                <span><strong>Bored during break</strong> - Offer entertainment!</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-2xl">🎁</span>
+                                <span><strong>Want gifts</strong> - Make custom items!</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-2xl">📚</span>
+                                <span><strong>Messy desk</strong> - Offer organizing service!</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="bg-purple-100 border-4 border-purple-400 rounded-2xl p-8">
+                    <h3 class="text-2xl font-bold text-purple-800 mb-4 text-center">🎯 Your Mission Right Now:</h3>
+                    <p class="text-lg text-gray-800 text-center mb-4">Look around your classroom for 30 seconds. What do you notice?</p>
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                        <div class="bg-white rounded-lg p-4 text-center">
+                            <div class="text-3xl mb-2">👀</div>
+                            <div class="font-semibold text-sm">Watch people</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 text-center">
+                            <div class="text-3xl mb-2">👂</div>
+                            <div class="font-semibold text-sm">Listen to them</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 text-center">
+                            <div class="text-3xl mb-2">💭</div>
+                            <div class="font-semibold text-sm">Think about needs</div>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 text-center">
+                            <div class="text-3xl mb-2">✨</div>
+                            <div class="font-semibold text-sm">Find opportunities!</div>
+                        </div>
+                    </div>
+
+                    <p class="text-center text-gray-700 italic">"The best entrepreneurs are great problem spotters!"</p>
+                </div>
+            `;
+        }
+
+        // STEP 3: Choose Products or Services
+        function renderStep3() {
+            document.getElementById('stepContent').innerHTML = `
+                <div class="text-center mb-8">
+                    <div class="text-7xl mb-4">🛤️</div>
+                    <h2 class="text-4xl font-bold text-gray-800 mb-4">Choose Your Path!</h2>
+                    <p class="text-xl text-gray-700">There are two main ways to make money. Which sounds better to you?</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+                    <button onclick="selectBusinessType('product')" class="bg-gradient-to-br from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white rounded-2xl p-8 transition transform hover:scale-105 shadow-xl ${gameData.businessType === 'product' ? 'ring-4 ring-yellow-400' : ''}">
+                        <div class="text-6xl mb-4">🛍️</div>
+                        <h3 class="text-3xl font-bold mb-4">Sell Products</h3>
+                        <p class="text-lg mb-4">Buy things and sell them for more money</p>
+                        <button onclick="event.stopPropagation(); showTip('products')" class="bg-white text-blue-600 px-4 py-2 rounded-full font-semibold hover:bg-blue-50 transition">
+                            💡 How does this work?
+                        </button>
+                        <div class="mt-4 text-left bg-white/20 rounded-xl p-4">
+                            <p class="font-semibold mb-2">Examples:</p>
+                            <p class="text-sm">• Buy candy pack, sell pieces</p>
+                            <p class="text-sm">• Buy stickers, sell individually</p>
+                            <p class="text-sm">• Buy bulk chips, resell bags</p>
+                        </div>
+                    </button>
+
+                    <button onclick="selectBusinessType('service')" class="bg-gradient-to-br from-purple-400 to-purple-600 hover:from-purple-500 hover:to-purple-700 text-white rounded-2xl p-8 transition transform hover:scale-105 shadow-xl ${gameData.businessType === 'service' ? 'ring-4 ring-yellow-400' : ''}">
+                        <div class="text-6xl mb-4">🛠️</div>
+                        <h3 class="text-3xl font-bold mb-4">Sell Services</h3>
+                        <p class="text-lg mb-4">Use your skills and time to help others</p>
+                        <button onclick="event.stopPropagation(); showTip('services')" class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-purple-50 transition">
+                            💡 How does this work?
+                        </button>
+                        <div class="mt-4 text-left bg-white/20 rounded-xl p-4">
+                            <p class="font-semibold mb-2">Examples:</p>
+                            <p class="text-sm">• Organize messy desks</p>
+                            <p class="text-sm">• Draw custom artwork</p>
+                            <p class="text-sm">• Deliver messages</p>
+                        </div>
+                    </button>
+                </div>
+
+                <div class="bg-yellow-100 border-4 border-yellow-400 rounded-2xl p-6">
+                    <h3 class="text-xl font-bold text-yellow-800 mb-3">🤔 Not Sure Which to Pick?</h3>
+                    <div class="grid md:grid-cols-2 gap-4 text-gray-800">
+                        <div>
+                            <p class="font-semibold mb-2">Pick PRODUCTS if you:</p>
+                            <p class="text-sm">• Like selling physical things</p>
+                            <p class="text-sm">• Want something quick to start</p>
+                            <p class="text-sm">• Are good at finding deals</p>
+                        </div>
+                        <div>
+                            <p class="font-semibold mb-2">Pick SERVICES if you:</p>
+                            <p class="text-sm">• Have a special skill or talent</p>
+                            <p class="text-sm">• Like helping people directly</p>
+                            <p class="text-sm">• Don't want to carry inventory</p>
+                        </div>
+                    </div>
+                </div>
+
+                ${gameData.businessType ? `
+                    <div class="mt-6 text-center">
+                        <div class="inline-block bg-green-100 border-4 border-green-400 rounded-2xl px-8 py-4">
+                            <p class="text-2xl font-bold text-green-700">
+                                ✅ You chose: ${gameData.businessType === 'product' ? '🛍️ Products!' : '🛠️ Services!'}
+                            </p>
+                        </div>
+                    </div>
+                ` : ''}
+            `;
+        }
+
+        function selectBusinessType(type) {
+            gameData.businessType = type;
+            saveGameData();
+            renderStep();
+        }
+
+        // STEP 4: Select Items or Services
+        function renderStep4() {
+            if (gameData.businessType === 'product') {
+                renderProductSelection();
+            } else {
+                renderServiceSelection();
+            }
+        }
+
+        function renderProductSelection() {
+            const categories = {
+                snacks: { name: 'Snacks & Treats', emoji: '🍬', color: 'red' },
+                crafts: { name: 'Craft Supplies', emoji: '🎨', color: 'blue' },
+                supplies: { name: 'School Supplies', emoji: '📝', color: 'green' },
+                service: { name: 'Service Supplies', emoji: '🧹', color: 'purple' }
+            };
+
+            let html = `
+                <div class="text-center mb-8">
+                    <div class="text-7xl mb-4">🛒</div>
+                    <h2 class="text-4xl font-bold text-gray-800 mb-4">The Dollar Store Table</h2>
+                    <p class="text-xl text-gray-700 mb-2">You have $1 to spend. Choose wisely!</p>
+                    <button onclick="showTip('products')" class="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-full font-bold transition">
+                        💡 Tips for Choosing Products
+                    </button>
+                </div>
+
+                <div class="bg-green-100 border-4 border-green-400 rounded-xl p-4 mb-6 text-center">
+                    <p class="text-2xl font-bold text-green-700">
+                        Budget Remaining: $${(1.00 - gameData.totalSpent).toFixed(2)}
+                    </p>
+                </div>
+            `;
+
+            for (let catKey in categories) {
+                const cat = categories[catKey];
+                const items = dollarStoreItems.filter(item => item.category === catKey);
+                
+                html += `
+                    <div class="mb-6">
+                        <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                            <span class="text-3xl">${cat.emoji}</span>
+                            ${cat.name}
+                        </h3>
+                        <div class="grid md:grid-cols-2 gap-4">
+                `;
+
+                items.forEach(item => {
+                    const isSelected = gameData.selectedItems.includes(item.id);
+                    const canAfford = (gameData.totalSpent + item.cost) <= 1.00;
+                    
+                    html += `
+                        <button onclick="toggleItem('${item.id}', ${item.cost})" 
+                                class="bg-white hover:bg-gray-50 rounded-xl p-4 border-4 transition transform hover:scale-102 ${isSelected ? 'border-green-500 bg-green-50' : 'border-gray-200'} ${!canAfford && !isSelected ? 'opacity-50 cursor-not-allowed' : ''}"
+                                ${!canAfford && !isSelected ? 'disabled' : ''}>
+                            <div class="flex items-center gap-4">
+                                <div class="text-4xl">${item.emoji}</div>
+                                <div class="flex-1 text-left">
+                                    <div class="font-bold text-gray-800">${item.name}</div>
+                                    <div class="text-sm text-gray-600">Cost: $${item.cost.toFixed(2)}</div>
+                                    <div class="text-xs text-purple-600">Suggested sell: $${item.suggested.toFixed(2)} each</div>
+                                </div>
+                                ${isSelected ? '<div class="text-3xl">✅</div>' : ''}
+                            </div>
+                        </button>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            if (gameData.selectedItems.length > 0) {
+                html += `
+                    <div class="bg-purple-100 border-4 border-purple-400 rounded-2xl p-6 mt-6">
+                        <h3 class="text-xl font-bold text-purple-800 mb-3">📦 Your Selected Items:</h3>
+                        <div class="space-y-2">
+                `;
+                
+                gameData.selectedItems.forEach(itemId => {
+                    const item = dollarStoreItems.find(i => i.id === itemId);
+                    html += `
+                        <div class="flex justify-between items-center bg-white rounded-lg p-3">
+                            <span>${item.emoji} ${item.name}</span>
+                            <span class="font-bold">$${item.cost.toFixed(2)}</span>
+                        </div>
+                    `;
+                });
+
+                html += `
+                            <div class="border-t-4 border-purple-400 pt-3 mt-3">
+                                <div class="flex justify-between items-center font-bold text-lg">
+                                    <span>Total Spent:</span>
+                                    <span class="text-purple-700">$${gameData.totalSpent.toFixed(2)}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('stepContent').innerHTML = html;
+        }
+
+        function renderServiceSelection() {
+            let html = `
+                <div class="text-center mb-8">
+                    <div class="text-7xl mb-4">🛠️</div>
+                    <h2 class="text-4xl font-bold text-gray-800 mb-4">Choose Your Service</h2>
+                    <p class="text-xl text-gray-700 mb-2">What service will you offer? Pick supplies you might need!</p>
+                    <button onclick="showTip('services')" class="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-full font-bold transition">
+                        💡 Tips for Service Businesses
+                    </button>
+                </div>
+
+                <div class="bg-green-100 border-4 border-green-400 rounded-xl p-4 mb-6 text-center">
+                    <p class="text-2xl font-bold text-green-700">
+                        Budget Remaining: $${(1.00 - gameData.totalSpent).toFixed(2)}
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 mb-8">
+            `;
+
+            serviceIdeas.forEach(service => {
+                const isSelected = gameData.selectedItems.includes(service.id);
+                
+                html += `
+                    <div onclick="toggleService('${service.id}')" 
+                         class="bg-white hover:bg-gray-50 rounded-xl p-6 border-4 cursor-pointer transition transform hover:scale-102 ${isSelected ? 'border-green-500 bg-green-50' : 'border-gray-200'}">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-3">
+                                <div class="text-5xl">${service.emoji}</div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-800">${service.name}</h3>
+                                    <div class="text-sm text-gray-600">${service.time}</div>
+                                </div>
+                            </div>
+                            ${isSelected ? '<div class="text-3xl">✅</div>' : ''}
+                        </div>
+                        <p class="text-gray-700 mb-3">${service.description}</p>
+                        <div class="bg-purple-50 rounded-lg p-3 text-sm">
+                            <p class="font-semibold text-purple-800 mb-1">💰 Suggested price: $${service.suggested.toFixed(2)}</p>
+                            <p class="text-gray-700"><strong>Supplies needed:</strong> ${service.supplies}</p>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                </div>
+            `;
+
+            // Show dollar store items they can buy for their service
+            if (gameData.selectedItems.length > 0) {
+                html += `
+                    <div class="bg-blue-100 border-4 border-blue-400 rounded-2xl p-6 mb-6">
+                        <h3 class="text-2xl font-bold text-blue-800 mb-4">🛒 Buy Supplies for Your Service</h3>
+                        <p class="text-gray-700 mb-4">Use your $1 to buy supplies that will help you provide your service!</p>
+                        <div class="grid md:grid-cols-2 gap-4">
+                `;
+
+                dollarStoreItems.forEach(item => {
+                    const isItemSelected = gameData.selectedItems.includes(item.id);
+                    const canAfford = (gameData.totalSpent + item.cost) <= 1.00;
+                    
+                    html += `
+                        <button onclick="event.stopPropagation(); toggleItem('${item.id}', ${item.cost})" 
+                                class="bg-white hover:bg-gray-50 rounded-xl p-4 border-2 transition ${isItemSelected ? 'border-green-500 bg-green-50' : 'border-gray-200'} ${!canAfford && !isItemSelected ? 'opacity-50' : ''}"
+                                ${!canAfford && !isItemSelected ? 'disabled' : ''}>
+                            <div class="flex items-center gap-3">
+                                <div class="text-3xl">${item.emoji}</div>
+                                <div class="flex-1 text-left text-sm">
+                                    <div class="font-bold text-gray-800">${item.name}</div>
+                                    <div class="text-gray-600">$${item.cost.toFixed(2)}</div>
+                                </div>
+                                ${isItemSelected ? '<div class="text-2xl">✅</div>' : ''}
+                            </div>
+                        </button>
+                    `;
+                });
+
+                html += `
+                        </div>
+                    </div>
+                `;
+            }
+
+            document.getElementById('stepContent').innerHTML = html;
+        }
+
+        function toggleItem(itemId, cost) {
+            const index = gameData.selectedItems.indexOf(itemId);
+            
+            if (index > -1) {
+                // Remove item
+                gameData.selectedItems.splice(index, 1);
+                gameData.totalSpent -= cost;
+            } else {
+                // Add item
+                if (gameData.totalSpent + cost <= 1.00) {
+                    gameData.selectedItems.push(itemId);
+                    gameData.totalSpent += cost;
+                }
+            }
+            
+            saveGameData();
+            renderStep();
+        }
+
+        function toggleService(serviceId) {
+            // Only allow one service to be selected
+            const index = gameData.selectedItems.indexOf(serviceId);
+            
+            if (index > -1) {
+                gameData.selectedItems = gameData.selectedItems.filter(id => !serviceIdeas.find(s => s.id === id));
+            } else {
+                gameData.selectedItems = gameData.selectedItems.filter(id => serviceIdeas.find(s => s.id === id) === undefined);
+                gameData.selectedItems.unshift(serviceId);
+            }
+            
+            saveGameData();
+            renderStep();
+        }
+
+        // STEP 5: Set Prices
+        function renderStep5() {
+            let html = `
+                <div class="text-center mb-8">
+                    <div class="text-7xl mb-4">💰</div>
+                    <h2 class="text-4xl font-bold text-gray-800 mb-4">Set Your Prices</h2>
+                    <p class="text-xl text-gray-700">How much will you charge? Price it right to make profit!</p>
+                    <button onclick="showTip('pricing')" class="mt-4 bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-full font-bold transition">
+                        💡 Tips for Pricing
+                    </button>
+                </div>
+            `;
+
+            if (gameData.businessType === 'product') {
+                html += `<div class="space-y-6">`;
+                
+                gameData.selectedItems.forEach(itemId => {
+                    const item = dollarStoreItems.find(i => i.id === itemId);
+                    if (!item) return;
+                    
+                    const currentPrice = gameData.prices[itemId] || item.suggested;
+                    
+                    html += `
+                        <div class="bg-white rounded-2xl p-6 border-4 border-purple-300">
+                            <div class="flex items-center gap-4 mb-4">
+                                <div class="text-5xl">${item.emoji}</div>
+                                <div class="flex-1">
+                                    <h3 class="text-xl font-bold text-gray-800">${item.name}</h3>
+                                    <p class="text-sm text-gray-600">You paid: $${item.cost.toFixed(2)} total</p>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-purple-50 rounded-xl p-4 mb-4">
+                                <label class="block text-sm font-bold text-gray-700 mb-2">Price per piece/unit:</label>
+                                <div class="flex items-center gap-4">
+                                    <input type="number" 
+                                           id="price-${itemId}"
+                                           value="${currentPrice.toFixed(2)}" 
+                                           step="0.05"
+                                           min="0.05"
+                                           class="flex-1 px-4 py-3 border-2 border-purple-300 rounded-lg text-2xl font-bold text-center"
+                                           onchange="updatePrice('${itemId}', this.value)">
+                                    <button onclick="document.getElementById('price-${itemId}').value = ${item.suggested.toFixed(2)}; updatePrice('${itemId}', ${item.suggested.toFixed(2)});" 
+                                            class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold transition">
+                                        Suggested: $${item.suggested.toFixed(2)}
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-3 text-sm">
+                                <div class="bg-green-100 rounded-lg p-3 text-center">
+                                    <div class="font-bold text-green-700">Profit per unit</div>
+                                    <div class="text-xl font-bold text-green-800">$${(currentPrice - item.cost).toFixed(2)}</div>
+                                </div>
+                                <div class="bg-blue-100 rounded-lg p-3 text-center">
+                                    <div class="font-bold text-blue-700">Break even at</div>
+                                    <div class="text-xl font-bold text-blue-800">${Math.ceil(item.cost / currentPrice)} sales</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            } else {
+                // Service pricing
+                const selectedService = serviceIdeas.find(s => gameData.selectedItems.includes(s.id));
+                if (selectedService) {
+                    const currentPrice = gameData.prices[selectedService.id] || selectedService.suggested;
+                    
+                    html += `
+                        <div class="bg-white rounded-2xl p-8 border-4 border-purple-300">
+                            <div class="flex items-center gap-4 mb-6">
+                                <div class="text-6xl">${selectedService.emoji}</div>
+                                <div>
+                                    <h3 class="text-2xl font-bold text-gray-800">${selectedService.name}</h3>
+                                    <p class="text-gray-600">${selectedService.description}</p>
+                                    <p class="text-sm text-gray-500">Time: ${selectedService.time}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="bg-purple-50 rounded-xl p-6 mb-6">
+                                <label class="block text-lg font-bold text-gray-700 mb-3">Price per service:</label>
+                                <div class="flex items-center gap-4">
+                                    <input type="number" 
+                                           id="price-${selectedService.id}"
+                                           value="${currentPrice.toFixed(2)}" 
+                                           step="0.05"
+                                           min="0.05"
+                                           class="flex-1 px-6 py-4 border-2 border-purple-300 rounded-lg text-3xl font-bold text-center"
+                                           onchange="updatePrice('${selectedService.id}', this.value)">
+                                    <button onclick="document.getElementById('price-${selectedService.id}').value = ${selectedService.suggested.toFixed(2)}; updatePrice('${selectedService.id}', ${selectedService.suggested.toFixed(2)});" 
+                                            class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg font-semibold transition">
+                                        Suggested: $${selectedService.suggested.toFixed(2)}
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-3 gap-4">
+                                <div class="bg-green-100 rounded-xl p-4 text-center">
+                                    <div class="font-bold text-green-700">Profit per service</div>
+                                    <div class="text-2xl font-bold text-green-800">$${(currentPrice - gameData.totalSpent).toFixed(2)}</div>
+                                    <div class="text-xs text-gray-600 mt-1">(after supply cost)</div>
+                                </div>
+                                <div class="bg-blue-100 rounded-xl p-4 text-center">
+                                    <div class="font-bold text-blue-700">Break even at</div>
+                                    <div class="text-2xl font-bold text-blue-800">${Math.ceil(gameData.totalSpent / currentPrice)} services</div>
+                                </div>
+                                <div class="bg-purple-100 rounded-xl p-4 text-center">
+                                    <div class="font-bold text-purple-700">5 services =</div>
+                                    <div class="text-2xl font-bold text-purple-800">$${((currentPrice * 5) - gameData.totalSpent).toFixed(2)}</div>
+                                    <div class="text-xs text-gray-600 mt-1">profit!</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            html += `
+                <div class="bg-yellow-100 border-4 border-yellow-400 rounded-2xl p-6 mt-6">
+                    <h3 class="text-xl font-bold text-yellow-800 mb-3">💡 Pricing Strategy Tips:</h3>
+                    <ul class="space-y-2 text-gray-800">
+                        <li>✓ <strong>Too low?</strong> You won't make much profit even if you sell a lot</li>
+                        <li>✓ <strong>Too high?</strong> Nobody will buy from you</li>
+                        <li>✓ <strong>Just right?</strong> Find the sweet spot where people say "That's fair!"</li>
+                        <li>✓ <strong>Pro tip:</strong> You can always adjust prices based on demand!</li>
+                    </ul>
+                </div>
+            `;
+
+            document.getElementById('stepContent').innerHTML = html;
+        }
+
+        function updatePrice(itemId, price) {
+            gameData.prices[itemId] = parseFloat(price);
+            saveGameData();
+            renderStep();
+        }
+
+        // STEP 6: Sales Tracker
+        function renderStep6() {
+            const totalProfit = gameData.totalEarned - gameData.totalSpent;
+            
+            let html = `
+                <div class="text-center mb-8">
+                    <div class="text-7xl mb-4">📊</div>
+                    <h2 class="text-4xl font-bold text-gray-800 mb-4">Track Your Sales!</h2>
+                    <p class="text-xl text-gray-700">Record every sale you make. Watch your profit grow!</p>
+                    <button onclick="showTip('customer')" class="mt-4 bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-full font-bold transition">
+                        💡 Tips for Getting Customers
+                    </button>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-4 mb-8">
+                    <div class="bg-red-100 border-4 border-red-400 rounded-xl p-6 text-center">
+                        <div class="text-sm font-bold text-red-700 mb-2">💸 Money Spent</div>
+                        <div class="text-4xl font-bold text-red-600">$${gameData.totalSpent.toFixed(2)}</div>
+                    </div>
+                    <div class="bg-green-100 border-4 border-green-400 rounded-xl p-6 text-center">
+                        <div class="text-sm font-bold text-green-700 mb-2">💰 Money Earned</div>
+                        <div class="text-4xl font-bold text-green-600">$${gameData.totalEarned.toFixed(2)}</div>
+                    </div>
+                    <div class="bg-${totalProfit >= 0 ? 'purple' : 'gray'}-100 border-4 border-${totalProfit >= 0 ? 'purple' : 'gray'}-400 rounded-xl p-6 text-center">
+                        <div class="text-sm font-bold text-${totalProfit >= 0 ? 'purple' : 'gray'}-700 mb-2">✨ Total Profit</div>
+                        <div class="text-4xl font-bold text-${totalProfit >= 0 ? 'purple' : 'gray'}-600">$${totalProfit.toFixed(2)}</div>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl p-6 border-4 border-blue-400 mb-6">
+                    <h3 class="text-2xl font-bold text-blue-800 mb-4">➕ Record a Sale</h3>
+                    
+                    <div class="grid md:grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">What did you sell?</label>
+                            <select id="saleItem" class="w-full px-4 py-3 border-2 border-blue-300 rounded-lg font-semibold">
+                                <option value="">-- Select Item/Service --</option>
+            `;
+
+            if (gameData.businessType === 'product') {
+                gameData.selectedItems.forEach(itemId => {
+                    const item = dollarStoreItems.find(i => i.id === itemId);
+                    if (item) {
+                        html += `<option value="${itemId}">${item.emoji} ${item.name}</option>`;
+                    }
+                });
+            } else {
+                gameData.selectedItems.forEach(itemId => {
+                    const service = serviceIdeas.find(s => s.id === itemId);
+                    if (service) {
+                        html += `<option value="${itemId}">${service.emoji} ${service.name}</option>`;
+                    }
+                });
+            }
+
+            html += `
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-bold text-gray-700 mb-2">Quantity Sold</label>
+                            <input type="number" id="saleQuantity" value="1" min="1" class="w-full px-4 py-3 border-2 border-blue-300 rounded-lg text-center font-bold text-2xl">
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Price per unit (automatically filled from your settings)</label>
+                        <input type="number" id="salePrice" step="0.05" class="w-full px-4 py-3 border-2 border-blue-300 rounded-lg text-center font-bold text-2xl">
+                    </div>
+
+                    <button onclick="recordSale()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-xl transition transform hover:scale-105">
+                        ✅ Record This Sale!
+                    </button>
+                </div>
+
+                <div class="bg-purple-50 rounded-2xl p-6 border-4 border-purple-300">
+                    <h3 class="text-2xl font-bold text-purple-800 mb-4">📜 Sales History</h3>
+            `;
+
+            if (gameData.sales.length === 0) {
+                html += `
+                    <div class="text-center py-8 text-gray-500">
+                        <div class="text-5xl mb-3">🤷</div>
+                        <p class="text-lg">No sales yet. Go make your first sale!</p>
+                    </div>
+                `;
+            } else {
+                html += `<div class="space-y-3">`;
+                
+                gameData.sales.slice().reverse().forEach((sale, index) => {
+                    const item = dollarStoreItems.find(i => i.id === sale.item) || serviceIdeas.find(s => s.id === sale.item);
+                    const total = sale.price * sale.quantity;
+                    
+                    html += `
+                        <div class="bg-white rounded-lg p-4 flex justify-between items-center">
+                            <div class="flex items-center gap-3">
+                                <div class="text-3xl">${item ? item.emoji : '📦'}</div>
+                                <div>
+                                    <div class="font-bold text-gray-800">${item ? item.name : 'Item'}</div>
+                                    <div class="text-sm text-gray-600">${sale.quantity}x @ $${sale.price.toFixed(2)} each</div>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <div class="text-2xl font-bold text-green-600">+$${total.toFixed(2)}</div>
+                                <button onclick="deleteSale(${gameData.sales.length - 1 - index})" class="text-xs text-red-500 hover:text-red-700">Delete</button>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                html += `</div>`;
+            }
+
+            html += `
+                </div>
+            `;
+
+            if (totalProfit > 0) {
+                const roi = ((totalProfit / gameData.totalSpent) * 100).toFixed(0);
+                html += `
+                    <div class="bg-gradient-to-r from-yellow-400 to-orange-400 rounded-2xl p-8 mt-6 text-center text-white">
+                        <h3 class="text-3xl font-bold mb-4">🎉 You're Making Profit! 🎉</h3>
+                        <p class="text-xl mb-2">You turned $${gameData.totalSpent.toFixed(2)} into $${gameData.totalEarned.toFixed(2)}!</p>
+                        <p class="text-2xl font-bold">That's a ${roi}% return on investment!</p>
+                        <button onclick="showTip('reinvest')" class="mt-4 bg-white text-orange-600 px-6 py-3 rounded-full font-bold hover:bg-orange-50 transition">
+                            💡 What's next? Click for tip!
+                        </button>
+                    </div>
+                `;
+            }
+
+            document.getElementById('stepContent').innerHTML = html;
+
+            // Auto-fill price when item is selected
+            document.getElementById('saleItem').addEventListener('change', function() {
+                const itemId = this.value;
+                if (itemId && gameData.prices[itemId]) {
+                    document.getElementById('salePrice').value = gameData.prices[itemId].toFixed(2);
+                }
+            });
+        }
+
+        function recordSale() {
+            const itemId = document.getElementById('saleItem').value;
+            const quantity = parseInt(document.getElementById('saleQuantity').value);
+            const price = parseFloat(document.getElementById('salePrice').value);
+
+            if (!itemId) {
+                alert('Please select what you sold!');
+                return;
+            }
+
+            if (!quantity || quantity < 1) {
+                alert('Please enter a valid quantity!');
+                return;
+            }
+
+            if (!price || price <= 0) {
+                alert('Please enter a valid price!');
+                return;
+            }
+
+            const sale = {
+                item: itemId,
+                quantity: quantity,
+                price: price,
+                timestamp: new Date().toISOString()
+            };
+
+            gameData.sales.push(sale);
+            gameData.totalEarned += (price * quantity);
+            
+            saveGameData();
+            renderStep();
+
+            // Show success message
+            alert(`✅ Sale recorded! You earned $${(price * quantity).toFixed(2)}!`);
+        }
+
+        function deleteSale(index) {
+            if (confirm('Delete this sale?')) {
+                const sale = gameData.sales[index];
+                gameData.totalEarned -= (sale.price * sale.quantity);
+                gameData.sales.splice(index, 1);
+                saveGameData();
+                renderStep();
+            }
+        }
+    </script>
+
+</body>
+</html>
