@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Basics - Learn How Money Works!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    animation: {
+                        'bounce-slow': 'bounce 3s infinite',
+                        'pulse-slow': 'pulse 4s infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .dark .gradient-text {
+            background: linear-gradient(135deg, #a5b4fc 0%, #c4b5fd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .slide-up {
+            animation: slideUp 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+        .concept-card {
+            transition: all 0.3s ease;
+        }
+        .concept-card:hover {
+            transform: translateY(-5px);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-purple-50 via-blue-50 to-pink-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 min-h-screen transition-colors duration-300">
+
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-lg shadow-lg">
+        <div class="container mx-auto px-4 py-4">
+            <div class="flex justify-between items-center">
+                <h1 class="text-xl md:text-2xl font-bold gradient-text">💰 Business Basics</h1>
+                
+                <div class="flex items-center gap-4">
+                    <!-- Mobile Menu Button -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-lg bg-purple-100 dark:bg-gray-700 text-purple-600 dark:text-purple-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    
+                    <!-- Dark Mode Toggle -->
+                    <button onclick="toggleDarkMode()" class="p-2 rounded-full bg-purple-100 dark:bg-gray-700 text-purple-600 dark:text-yellow-300 hover:scale-110 transition-transform">
+                        <span id="darkIcon" class="hidden dark:block">☀️</span>
+                        <span id="lightIcon" class="block dark:hidden">🌙</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="fixed inset-0 z-40 hidden">
+        <div class="absolute inset-0 bg-black/50" onclick="toggleMobileMenu()"></div>
+        <div class="absolute right-0 top-0 h-full w-72 bg-white dark:bg-gray-800 shadow-2xl p-6 pt-20 overflow-y-auto">
+            <h3 class="text-lg font-bold text-gray-800 dark:text-white mb-4">📚 Jump to Section</h3>
+            <nav class="space-y-2" id="mobileNavLinks">
+                <!-- Links will be populated by JS -->
+            </nav>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <header class="pt-24 pb-12 px-4">
+                            <a class="px-3 py-2 bg-green-500 text-white font-semibold rounded-sm shadow-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-20 transition duration-300 ease-in-out" href="/">Back to Home</a>
+<br/>
+
+        <div class="container mx-auto text-center">
+            <div class="text-6xl md:text-8xl mb-6 animate-bounce-slow">🚀</div>
+            <h1 class="text-4xl md:text-6xl font-bold text-gray-800 dark:text-white mb-4">
+                Learn How <span class="gradient-text">Business</span> Works!
+            </h1>
+            <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                Simple explanations of money concepts that will help you turn $1 into more! 💵
+            </p>
+        </div>
+    </header>
+
+    <!-- Table of Contents -->
+    <section class="px-4 py-8">
+        <div class="container mx-auto max-w-4xl">
+            <div class="bg-white dark:bg-gray-800 rounded-3xl shadow-xl p-6 md:p-8">
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white mb-6 flex items-center gap-3">
+                    <span class="text-3xl">📚</span> Table of Contents
+                </h2>
+                
+                <div class="grid md:grid-cols-2 gap-3" id="tocContainer">
+                    <!-- TOC items will be populated by JS -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="px-4 py-8">
+        <div class="container mx-auto max-w-4xl space-y-12" id="conceptsContainer">
+            <!-- Concepts will be populated by JS -->
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 dark:bg-gray-950 text-white py-12 mt-16">
+        <div class="container mx-auto px-4 text-center">
+            <div class="text-4xl mb-4">🌟</div>
+            <h3 class="text-2xl font-bold mb-4">Remember!</h3>
+            <p class="text-lg text-gray-300 max-w-2xl mx-auto">
+                Every successful business started with a simple idea. Your $1 could be the beginning of something amazing!
+            </p>
+            <div class="mt-8 text-gray-500 text-sm">
+                Made with ❤️ for future entrepreneurs
+            </div>
+        </div>
+    </footer>
+
+    <!-- Examples Modal -->
+    <div id="examplesModal" class="fixed inset-0 z-50 hidden items-center justify-center p-4" onclick="closeModal()">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div class="relative bg-white dark:bg-gray-800 rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto fade-in" onclick="event.stopPropagation()">
+            <div class="sticky top-0 bg-white dark:bg-gray-800 p-6 border-b border-gray-200 dark:border-gray-700 rounded-t-3xl">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span id="modalEmoji" class="text-4xl"></span>
+                        <h3 id="modalTitle" class="text-2xl font-bold text-gray-800 dark:text-white mt-2"></h3>
+                    </div>
+                    <button onclick="closeModal()" class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition">
+                        <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div id="modalContent" class="p-6">
+                <!-- Modal content will be populated by JS -->
+            </div>
+            <div class="sticky bottom-0 bg-white dark:bg-gray-800 p-6 border-t border-gray-200 dark:border-gray-700 rounded-b-3xl">
+                <button onclick="closeModal()" class="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-3 px-6 rounded-xl transition transform hover:scale-105">
+                    Got it! 👍
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Business Concepts Data
+        const concepts = [
+            {
+                id: 'problem-solving',
+                emoji: '🔍',
+                title: 'Problem Identification',
+                color: 'purple',
+                shortDesc: 'The foundation of every business! Find something people struggle with or need, and you\'ve found your opportunity. Problems = Money waiting to be made!',
+                keyPoints: [
+                    'Look for frustrations and complaints around you',
+                    'Notice what people wish they had',
+                    'The bigger the problem, the more valuable the solution'
+                ],
+                examples: [
+                    {
+                        title: '🍕 Domino\'s Pizza',
+                        desc: 'Problem: People were hungry but didn\'t want to cook or go out. Solution: Deliver hot pizza to their door! Now worth billions.'
+                    },
+                    {
+                        title: '📱 Uber',
+                        desc: 'Problem: Hard to get a taxi, never knew when it would arrive. Solution: App to call a car instantly. Changed transportation forever!'
+                    },
+                    {
+                        title: '🎒 Your Classroom',
+                        desc: 'Problem: Student forgot their pencil before a test. Solution: Sell them one for $0.25! Instant profit from solving a real problem.'
+                    },
+                    {
+                        title: '🥤 Lemonade Stand',
+                        desc: 'Problem: People are thirsty on a hot day. Solution: Cold lemonade right where they\'re walking! Classic business that still works.'
+                    }
+                ]
+            },
+            {
+                id: 'market-research',
+                emoji: '📊',
+                title: 'Market Research',
+                color: 'blue',
+                shortDesc: 'Before spending your money, find out what people ACTUALLY want to buy! Asking questions first saves you from wasting time and money on things nobody wants.',
+                keyPoints: [
+                    'Ask potential customers what they would buy',
+                    'Watch what\'s already selling well',
+                    'Don\'t assume - verify with real people!'
+                ],
+                examples: [
+                    {
+                        title: '🎮 Nintendo Switch',
+                        desc: 'Nintendo asked gamers what they wanted. Answer: Play at home AND on the go. They built exactly that and sold 140+ million units!'
+                    },
+                    {
+                        title: '🍦 Ice Cream Flavors',
+                        desc: 'Ben & Jerry\'s asks customers to vote on new flavors. The winners become real products that people already want to buy!'
+                    },
+                    {
+                        title: '📝 Simple Survey',
+                        desc: 'Ask 10 classmates: "Would you buy chips or candy?" If 8 say candy, guess what you should sell! That\'s market research.'
+                    },
+                    {
+                        title: '👀 Watch the Cafeteria',
+                        desc: 'Notice what runs out first in the lunch line? That\'s what people want most! Real-world research without asking a single question.'
+                    }
+                ]
+            },
+            {
+                id: 'products-services',
+                emoji: '🛍️',
+                title: 'Products vs Services',
+                color: 'green',
+                shortDesc: 'Two ways to make money: Sell THINGS (products) or sell your TIME & SKILLS (services). Both work great - pick what fits you best!',
+                keyPoints: [
+                    'Products: Buy items, sell for more money',
+                    'Services: Use your talents to help others',
+                    'You can even combine both!'
+                ],
+                examples: [
+                    {
+                        title: '🛍️ Product: Apple',
+                        desc: 'Apple makes iPhones (products) and sells them. They buy parts for ~$400, sell the phone for $1000+. That\'s product business!'
+                    },
+                    {
+                        title: '💇 Service: Hair Salon',
+                        desc: 'A barber sells their skill and time. No inventory needed! They charge $20 for 30 minutes of work. Pure profit from talent.'
+                    },
+                    {
+                        title: '🍬 Your Product Idea',
+                        desc: 'Buy a $1 candy pack with 10 pieces. Sell each piece for $0.25. You\'re a product business making $1.50 profit!'
+                    },
+                    {
+                        title: '🎨 Your Service Idea',
+                        desc: 'Good at drawing? Sell custom name designs for $0.50 each. No cost except your time. 10 drawings = $5 pure profit!'
+                    }
+                ]
+            },
+            {
+                id: 'pricing',
+                emoji: '💲',
+                title: 'Pricing Strategy',
+                color: 'yellow',
+                shortDesc: 'The art of finding the perfect price! Too high and nobody buys. Too low and you don\'t make money. The sweet spot is where customers say "That\'s fair!"',
+                keyPoints: [
+                    'Consider what it cost YOU first',
+                    'Think about what customers are willing to pay',
+                    'Urgent needs = higher prices possible'
+                ],
+                examples: [
+                    {
+                        title: '🎬 Movie Theater Popcorn',
+                        desc: 'Costs them $0.50 to make, sells for $8! Why? You\'re trapped inside, hungry, and have no other options. Location + urgency = high prices.'
+                    },
+                    {
+                        title: '💧 Water Bottles',
+                        desc: '$1 at the grocery store, $5 at a concert, $0.10 at home from tap. SAME water, different prices based on convenience and need!'
+                    },
+                    {
+                        title: '✏️ Emergency Pencil',
+                        desc: 'Pencil normally costs $0.10. But 1 minute before a test? A desperate student might pay $0.50! Timing changes value.'
+                    },
+                    {
+                        title: '🏷️ The Anchor Trick',
+                        desc: 'Show a "regular price" of $2, then your "sale price" of $1. People feel like they\'re getting a deal even if $1 is normal!'
+                    }
+                ]
+            },
+            {
+                id: 'profit-margin',
+                emoji: '📈',
+                title: 'Profit Margins',
+                color: 'pink',
+                shortDesc: 'Profit is the money you KEEP after paying for everything. Revenue is all the money that comes in, but profit is what actually goes in YOUR pocket!',
+                keyPoints: [
+                    'Profit = Revenue - Costs',
+                    'Always know your costs BEFORE pricing',
+                    'Higher margins = more money per sale'
+                ],
+                examples: [
+                    {
+                        title: '🍔 McDonald\'s Fries',
+                        desc: 'A large fry costs McDonald\'s about $0.20 to make. They sell it for $3.50. That\'s a $3.30 profit - over 90% margin! Fries = money machine.'
+                    },
+                    {
+                        title: '👟 Nike Shoes',
+                        desc: 'Costs ~$30 to make a shoe in the factory. Sells for $150. That\'s $120 profit per pair! Brand value adds to what people pay.'
+                    },
+                    {
+                        title: '🍪 Cookie Math',
+                        desc: 'You bake 24 cookies for $6 in ingredients ($0.25 each). Sell for $1 each. Revenue: $24. Profit: $18. You kept 75%!'
+                    },
+                    {
+                        title: '⚠️ Bad Margin Example',
+                        desc: 'Buy a $1 water, sell for $1.10. Only $0.10 profit! You\'d need to sell 100 just to make $10. Low margins = lots of work.'
+                    }
+                ]
+            },
+            {
+                id: 'break-even',
+                emoji: '⚖️',
+                title: 'Break-Even Analysis',
+                color: 'indigo',
+                shortDesc: 'The magic moment when you\'ve made back what you spent! After break-even, every sale is pure profit. The faster you get there, the better!',
+                keyPoints: [
+                    'Break-even = Total Cost ÷ Price Per Sale',
+                    'After break-even, everything is profit',
+                    'Lower costs OR higher prices = faster break-even'
+                ],
+                examples: [
+                    {
+                        title: '🎮 Video Game Studio',
+                        desc: 'Costs $50 million to make a game. Sell for $60 each, keep $30 after store fees. Need to sell 1.67 million copies just to break even!'
+                    },
+                    {
+                        title: '🚗 Food Truck',
+                        desc: 'Buy truck for $20,000. Make $100 profit per day. Break-even = 200 days of work. After that, it\'s all profit!'
+                    },
+                    {
+                        title: '🍬 Your Candy Business',
+                        desc: 'Spend $1 on 10 candies. Sell each for $0.25. Break-even at 4 sales ($1 ÷ $0.25 = 4). Sales 5-10 = $1.50 pure profit!'
+                    },
+                    {
+                        title: '⚡ Quick Break-Even',
+                        desc: 'Service business: Spend $1 on paper, charge $0.50 per drawing. Break-even after just 2 drawings! Everything after = profit.'
+                    }
+                ]
+            },
+            {
+                id: 'revenue-profit',
+                emoji: '💵',
+                title: 'Revenue vs Profit',
+                color: 'emerald',
+                shortDesc: 'Revenue is ALL the money that comes in. Profit is what you KEEP after paying costs. A business can have huge revenue but tiny profit - the profit is what matters!',
+                keyPoints: [
+                    'Revenue = Total sales (money IN)',
+                    'Profit = Revenue minus ALL costs',
+                    'Focus on profit, not just revenue!'
+                ],
+                examples: [
+                    {
+                        title: '🛒 Amazon',
+                        desc: 'Revenue: $500+ billion per year! But profit margin is only about 3-4%. Huge money in, but most goes to costs. Still billions in profit though!'
+                    },
+                    {
+                        title: '🍎 Apple',
+                        desc: 'Revenue: $380 billion. But they KEEP about 25% as profit. Higher margins = more money stays with them. Smart business!'
+                    },
+                    {
+                        title: '📊 Your Business',
+                        desc: 'You sold $5 worth of candy (revenue). But you spent $2 buying it. Your profit is only $3. Revenue sounds bigger, profit is real!'
+                    },
+                    {
+                        title: '🎭 The Trap',
+                        desc: 'Kid A: "I made $20 today!" (but spent $18). Kid B: "I made $10 today!" (but spent $2). Kid B actually made MORE profit ($8 vs $2)!'
+                    }
+                ]
+            },
+            {
+                id: 'roi',
+                emoji: '🎯',
+                title: 'Return on Investment (ROI)',
+                color: 'orange',
+                shortDesc: 'ROI tells you how good your investment was. It\'s like a grade for your money decisions! Higher ROI = smarter use of your money.',
+                keyPoints: [
+                    'ROI = (Profit ÷ Cost) × 100',
+                    '100% ROI = You doubled your money',
+                    'Compare ROIs to make better decisions'
+                ],
+                examples: [
+                    {
+                        title: '📈 Stock Market',
+                        desc: 'Average stock market ROI: about 10% per year. Put in $100, get back $110. Good investors beat this average!'
+                    },
+                    {
+                        title: '🏠 Real Estate',
+                        desc: 'Buy a house for $200,000. Sell for $300,000. Profit: $100,000. ROI: 50%. Not bad for sitting and waiting!'
+                    },
+                    {
+                        title: '🍬 Your Candy ROI',
+                        desc: 'Spent $1, made $2.50, profit $1.50. ROI = ($1.50 ÷ $1) × 100 = 150%! You MORE than doubled your money. Amazing!'
+                    },
+                    {
+                        title: '🤔 Comparing Options',
+                        desc: 'Candy: 150% ROI. Pencils: 100% ROI. Cleaning service: 400% ROI (low costs!). ROI helps you pick the BEST opportunity.'
+                    }
+                ]
+            },
+            {
+                id: 'customers',
+                emoji: '👥',
+                title: 'Customer Acquisition',
+                color: 'cyan',
+                shortDesc: 'Getting customers is the hardest part! But once you have happy customers, they\'ll tell their friends. Word of mouth is the most powerful (and free!) advertising.',
+                keyPoints: [
+                    'First customer is always the hardest',
+                    'Happy customers bring more customers',
+                    'Word of mouth is FREE advertising'
+                ],
+                examples: [
+                    {
+                        title: '📱 TikTok & Instagram',
+                        desc: 'These apps are FREE because they want users (customers). Once you\'re hooked, they make money showing you ads. Get customers first, profit later!'
+                    },
+                    {
+                        title: '☕ Starbucks Names',
+                        desc: 'They write your name on cups. You post it on Instagram. Free advertising! Plus, you feel special and come back. Genius customer strategy.'
+                    },
+                    {
+                        title: '🎁 Free Sample Trick',
+                        desc: 'Give away one free candy. They love it, buy more, tell 3 friends. 1 free sample = 4 paying customers. Investment in marketing!'
+                    },
+                    {
+                        title: '⭐ The Referral Ask',
+                        desc: '"Thanks for buying! If you liked it, tell your friends!" Simple ask after a sale. Happy customers become your sales team for free.'
+                    }
+                ]
+            },
+            {
+                id: 'reinvestment',
+                emoji: '🚀',
+                title: 'Reinvestment for Growth',
+                color: 'rose',
+                shortDesc: 'The secret to turning $1 into $1000! Don\'t spend all your profit - use it to buy MORE inventory or improve your business. Money makes money!',
+                keyPoints: [
+                    'Reinvest profits to grow faster',
+                    'Compound growth: $1 → $3 → $9 → $27...',
+                    'Patience + reinvestment = wealth'
+                ],
+                examples: [
+                    {
+                        title: '📦 Amazon\'s Secret',
+                        desc: 'For years, Amazon made almost NO profit. Why? They reinvested EVERYTHING into growth. Now they\'re worth over $1 trillion!'
+                    },
+                    {
+                        title: '🍔 McDonald\'s Growth',
+                        desc: 'Started with 1 restaurant. Used profits to open #2. Then #4, #8, #16... Now 40,000+ locations! Reinvestment = empire.'
+                    },
+                    {
+                        title: '📈 Your $1 Journey',
+                        desc: 'Day 1: $1 → $2.50 ($1.50 profit). Day 2: Reinvest $2.50 → $6.25. Day 3: $6.25 → $15.62. Day 4: $15.62 → $39. Wow!'
+                    },
+                    {
+                        title: '💰 Warren Buffett',
+                        desc: 'Started investing at age 11. Never stopped reinvesting. Now worth $100+ billion. He says: "My wealth came from living in America, lucky genes, and compound interest."'
+                    }
+                ]
+            }
+        ];
+
+        // Color mappings for Tailwind
+        const colorClasses = {
+            purple: {
+                bg: 'bg-purple-100 dark:bg-purple-900/30',
+                border: 'border-purple-300 dark:border-purple-700',
+                text: 'text-purple-700 dark:text-purple-300',
+                button: 'bg-purple-600 hover:bg-purple-700',
+                light: 'bg-purple-50 dark:bg-purple-900/20'
+            },
+            blue: {
+                bg: 'bg-blue-100 dark:bg-blue-900/30',
+                border: 'border-blue-300 dark:border-blue-700',
+                text: 'text-blue-700 dark:text-blue-300',
+                button: 'bg-blue-600 hover:bg-blue-700',
+                light: 'bg-blue-50 dark:bg-blue-900/20'
+            },
+            green: {
+                bg: 'bg-green-100 dark:bg-green-900/30',
+                border: 'border-green-300 dark:border-green-700',
+                text: 'text-green-700 dark:text-green-300',
+                button: 'bg-green-600 hover:bg-green-700',
+                light: 'bg-green-50 dark:bg-green-900/20'
+            },
+            yellow: {
+                bg: 'bg-yellow-100 dark:bg-yellow-900/30',
+                border: 'border-yellow-300 dark:border-yellow-700',
+                text: 'text-yellow-700 dark:text-yellow-300',
+                button: 'bg-yellow-600 hover:bg-yellow-700',
+                light: 'bg-yellow-50 dark:bg-yellow-900/20'
+            },
+            pink: {
+                bg: 'bg-pink-100 dark:bg-pink-900/30',
+                border: 'border-pink-300 dark:border-pink-700',
+                text: 'text-pink-700 dark:text-pink-300',
+                button: 'bg-pink-600 hover:bg-pink-700',
+                light: 'bg-pink-50 dark:bg-pink-900/20'
+            },
+            indigo: {
+                bg: 'bg-indigo-100 dark:bg-indigo-900/30',
+                border: 'border-indigo-300 dark:border-indigo-700',
+                text: 'text-indigo-700 dark:text-indigo-300',
+                button: 'bg-indigo-600 hover:bg-indigo-700',
+                light: 'bg-indigo-50 dark:bg-indigo-900/20'
+            },
+            emerald: {
+                bg: 'bg-emerald-100 dark:bg-emerald-900/30',
+                border: 'border-emerald-300 dark:border-emerald-700',
+                text: 'text-emerald-700 dark:text-emerald-300',
+                button: 'bg-emerald-600 hover:bg-emerald-700',
+                light: 'bg-emerald-50 dark:bg-emerald-900/20'
+            },
+            orange: {
+                bg: 'bg-orange-100 dark:bg-orange-900/30',
+                border: 'border-orange-300 dark:border-orange-700',
+                text: 'text-orange-700 dark:text-orange-300',
+                button: 'bg-orange-600 hover:bg-orange-700',
+                light: 'bg-orange-50 dark:bg-orange-900/20'
+            },
+            cyan: {
+                bg: 'bg-cyan-100 dark:bg-cyan-900/30',
+                border: 'border-cyan-300 dark:border-cyan-700',
+                text: 'text-cyan-700 dark:text-cyan-300',
+                button: 'bg-cyan-600 hover:bg-cyan-700',
+                light: 'bg-cyan-50 dark:bg-cyan-900/20'
+            },
+            rose: {
+                bg: 'bg-rose-100 dark:bg-rose-900/30',
+                border: 'border-rose-300 dark:border-rose-700',
+                text: 'text-rose-700 dark:text-rose-300',
+                button: 'bg-rose-600 hover:bg-rose-700',
+                light: 'bg-rose-50 dark:bg-rose-900/20'
+            }
+        };
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTOC();
+            renderConcepts();
+            initDarkMode();
+        });
+
+        // Dark Mode
+        function initDarkMode() {
+            if (localStorage.getItem('darkMode') === 'true' || 
+                (!localStorage.getItem('darkMode') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+            }
+        }
+
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+        }
+
+        // Mobile Menu
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            menu.classList.toggle('hidden');
+            
+            if (!menu.classList.contains('hidden')) {
+                // Populate mobile nav links
+                const container = document.getElementById('mobileNavLinks');
+                container.innerHTML = concepts.map((concept, index) => `
+                    <a href="#${concept.id}" onclick="toggleMobileMenu()" 
+                       class="block p-3 rounded-lg hover:bg-purple-100 dark:hover:bg-gray-700 transition">
+                        <span class="mr-2">${concept.emoji}</span>
+                        <span class="text-gray-800 dark:text-white">${concept.title}</span>
+                    </a>
+                `).join('');
+            }
+        }
+
+        // Render Table of Contents
+        function renderTOC() {
+            const container = document.getElementById('tocContainer');
+            container.innerHTML = concepts.map((concept, index) => `
+                <a href="#${concept.id}" 
+                   class="flex items-center gap-3 p-4 rounded-xl ${colorClasses[concept.color].bg} border-2 ${colorClasses[concept.color].border} hover:scale-105 transition-transform">
+                    <span class="text-2xl">${concept.emoji}</span>
+                    <span class="font-semibold ${colorClasses[concept.color].text}">${index + 1}. ${concept.title}</span>
+                </a>
+            `).join('');
+        }
+
+        // Render Concepts
+        function renderConcepts() {
+            const container = document.getElementById('conceptsContainer');
+            container.innerHTML = concepts.map((concept, index) => {
+                const colors = colorClasses[concept.color];
+                return `
+                    <section id="${concept.id}" class="concept-card bg-white dark:bg-gray-800 rounded-3xl shadow-xl overflow-hidden">
+                        <!-- Header -->
+                        <div class="${colors.bg} p-6 md:p-8 border-b-4 ${colors.border}">
+                            <div class="flex items-center gap-4">
+                                <span class="text-5xl md:text-6xl">${concept.emoji}</span>
+                                <div>
+                                    <span class="text-sm font-bold ${colors.text} uppercase tracking-wider">Concept #${index + 1}</span>
+                                    <h2 class="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">${concept.title}</h2>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Content -->
+                        <div class="p-6 md:p-8">
+                            <p class="text-lg text-gray-700 dark:text-gray-300 mb-6 leading-relaxed">
+                                ${concept.shortDesc}
+                            </p>
+                            
+                            <!-- Key Points -->
+                            <div class="${colors.light} rounded-2xl p-6 mb-6">
+                                <h3 class="font-bold ${colors.text} mb-4 flex items-center gap-2">
+                                    <span>💡</span> Key Points:
+                                </h3>
+                                <ul class="space-y-3">
+                                    ${concept.keyPoints.map(point => `
+                                        <li class="flex items-start gap-3 text-gray-700 dark:text-gray-300">
+                                            <span class="${colors.text}">✓</span>
+                                            <span>${point}</span>
+                                        </li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+                            
+                            <!-- Examples Button -->
+                            <button onclick="openModal(${index})" 
+                                    class="${colors.button} text-white font-bold py-4 px-8 rounded-xl w-full md:w-auto transition transform hover:scale-105 flex items-center justify-center gap-2">
+                                <span>🌟</span>
+                                <span>Show Me Real Examples!</span>
+                            </button>
+                        </div>
+                    </section>
+                `;
+            }).join('');
+        }
+
+        // Modal Functions
+        function openModal(conceptIndex) {
+            const concept = concepts[conceptIndex];
+            const colors = colorClasses[concept.color];
+            
+            document.getElementById('modalEmoji').textContent = concept.emoji;
+            document.getElementById('modalTitle').textContent = concept.title + ' - Real Examples';
+            
+            document.getElementById('modalContent').innerHTML = `
+                <div class="space-y-4">
+                    ${concept.examples.map(example => `
+                        <div class="${colors.light} rounded-2xl p-5 border-2 ${colors.border}">
+                            <h4 class="text-xl font-bold text-gray-800 dark:text-white mb-2">${example.title}</h4>
+                            <p class="text-gray-700 dark:text-gray-300">${example.desc}</p>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div class="mt-6 p-4 bg-yellow-100 dark:bg-yellow-900/30 rounded-xl border-2 border-yellow-300 dark:border-yellow-700">
+                    <p class="text-center font-semibold text-yellow-800 dark:text-yellow-200">
+                        💭 Can you think of your OWN example?
+                    </p>
+                </div>
+            `;
+            
+            const modal = document.getElementById('examplesModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('examplesModal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+    </script>
+
+</body>
+</html>
